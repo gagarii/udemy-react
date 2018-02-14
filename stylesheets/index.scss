@@ -1,4 +1,4 @@
-$background-color: #fff;
+$background-color: #ddd;
 $text-color: #444;
 
 body {
@@ -11,3 +11,5 @@ body {
 @import 'SearchForm';
 @import 'GeocodeResult';
 @import 'Map';
+@import 'hotelsTable';
+@import 'HotelsClickableTh';

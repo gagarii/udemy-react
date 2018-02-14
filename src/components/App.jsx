@@ -1,4 +1,5 @@
 import React, { Component } from 'react'; // React import
+import _ from 'lodash';
 
 import SearchForm from './SearchForm';
 import GeocodeResult from './GeocodeResult';
@@ -6,6 +7,9 @@ import Map from './Map';
 import HotelsTable from './HotelsTable';
 
 import { geocode } from '../domain/Geocoder';
+import { searchHotelByLocation } from '../domain/HotelRepository';
+
+const sortedHotels = (hotels, sortKey) => _.sortBy(hotels, h => h[sortKey]);
 
 // Appクラスを定義
 class App extends Component {
@@ -16,10 +20,7 @@ class App extends Component {
         lat: 35.7100627,
         lng: 139.8107004,
       },
-      hotels: [
-        { id: 111, name: 'ホテルオークラ', url: 'https://google.com' },
-        { id: 222, name: '東横イン', url: 'https://www.yahoo.co.jp' },
-      ],
+      sortKey: 'price',
     };
   }
 
@@ -39,7 +40,7 @@ class App extends Component {
         switch (status) {
           case 'OK': {
             this.setState({ address, location });
-            break;
+            return searchHotelByLocation(location);
           }
           case 'ZERO_RESULTS': {
             this.setErrorMessage('結果が見つかりませんでした');
@@ -50,10 +51,18 @@ class App extends Component {
             break;
           }
         }
+        return [];
       })
-      .catch((error) => {
-        console.log(error);
+      .then((hotels) => {
+        this.setState({ hotels: sortedHotels(hotels, this.state.sortKey) });
+      })
+      .catch(() => {
+        this.setErrorMessage('通信に失敗しました');
       });
+  }
+
+  handleSortKeyChange(sortKey) {
+    this.setState({ sortKey, hotels: sortedHotels(this.state.hotels, sortKey) });
   }
 
   render() {
@@ -71,7 +80,11 @@ class App extends Component {
               location={this.state.location}
             />
             <h2>ホテル検索結果</h2>
-            <HotelsTable hotels={this.state.hotels} />
+            <HotelsTable
+              hotels={this.state.hotels}
+              sortKey={this.state.sortKey}
+              onSort={sortKey => this.handleSortKeyChange(sortKey)}
+            />
           </div>
         </div>
       </div>
