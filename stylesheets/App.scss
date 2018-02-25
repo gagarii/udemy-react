@@ -1,10 +1,19 @@
 .app {
   width: 1000px;
-  margin: 0 auto;
+  margin: $base-margin auto 0;
+  display: flex;
+}
+
+.left-navi {
+  list-style-type: none;
+  margin-right: $base-margin;
+  padding-right: $base-margin;
+  border-right: 1px solid #fff;
 }
 
 .app-title {
   border-bottom: solid 3px #00F;
+  margin-top: 0;
 }
 
 .result-area {
